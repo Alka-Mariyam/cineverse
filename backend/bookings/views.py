@@ -149,7 +149,7 @@ class BookingViewSet(viewsets.ModelViewSet):
                     from django.core.files.base import ContentFile
                     
                     seats_str = ", ".join([str(bs.seat.row) + str(bs.seat.number) for bs in booking.booked_seats.all()])
-                    qr_data = f"CINEVERSE TICKET\n------------------\nBooking ID: {booking.id}\nMovie: {booking.show.movie_title}\nTheatre: {booking.show.screen.theatre.name}\nScreen: {booking.show.screen.name}\nDate: {booking.show.date}\nTime: {booking.show.start_time}\nSeats: {seats_str}\nUser: {booking.user.username}"
+                    qr_data = f"CINEVERSE TICKET\n------------------\nBooking ID: {booking.id}\nMovie: {booking.show.movie.title}\nTheatre: {booking.show.screen.theatre.name}\nScreen: {booking.show.screen.name}\nDate: {booking.show.date}\nTime: {booking.show.start_time}\nSeats: {seats_str}\nUser: {booking.user.username}"
                     
                     img = qrcode.make(qr_data)
                     buffer = BytesIO()
