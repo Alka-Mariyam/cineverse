@@ -12,6 +12,7 @@ import Profile from './pages/Profile';
 import GroupBooking from './pages/GroupBooking';
 import ValidateTicket from './pages/ValidateTicket';
 import PaymentSuccess from './pages/PaymentSuccess';
+import AdminDashboard from './pages/AdminDashboard';
 import { AuthProvider } from './context/AuthContext';
 import Footer from './components/Footer';
 
@@ -34,6 +35,7 @@ function App() {
               <Route path="/group-booking/:token" element={<GroupBooking />} />
               <Route path="/validate/:bookingId/:token" element={<ValidateTicket />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
+              <Route path="/admin" element={<AdminDashboard />} />
             </Routes>
           </main>
           <Footer />

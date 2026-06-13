@@ -13,6 +13,8 @@ class BookingViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        if self.request.user.is_staff:
+            return Booking.objects.all()
         return Booking.objects.filter(user=self.request.user)
 
     @action(detail=False, methods=['post'])

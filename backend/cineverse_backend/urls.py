@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from movies.views import MovieViewSet, WatchlistViewSet
 from movies.views import MovieViewSet, WatchlistViewSet
-from theatres.views import TheatreViewSet, ShowViewSet, SeatViewSet
+from theatres.views import TheatreViewSet, ShowViewSet, SeatViewSet, ScreenViewSet
 from bookings.views import BookingViewSet, GroupBookingViewSet
 from users.views import RegisterView
 
@@ -13,6 +13,7 @@ router = DefaultRouter()
 router.register(r'movies', MovieViewSet)
 router.register(r'watchlist', WatchlistViewSet, basename='watchlist')
 router.register(r'theatres', TheatreViewSet)
+router.register(r'screens', ScreenViewSet)
 router.register(r'shows', ShowViewSet)
 router.register(r'seats', SeatViewSet)
 router.register(r'bookings', BookingViewSet, basename='booking')
@@ -28,4 +29,5 @@ urlpatterns = [
     path('api/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/qr/', include('qrcodes.urls')),
+    path('api/admin/stats/', __import__('cineverse_backend.admin_views').admin_views.AdminDashboardStatsView.as_view(), name='admin_stats'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

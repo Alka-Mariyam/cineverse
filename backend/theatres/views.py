@@ -5,13 +5,17 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Theatre, Screen, Show, Seat
 from .serializers import TheatreSerializer, ScreenSerializer, ShowSerializer, SeatSerializer
 
-class TheatreViewSet(viewsets.ReadOnlyModelViewSet):
+from cineverse_backend.permissions import IsAdminOrReadOnly
+
+class TheatreViewSet(viewsets.ModelViewSet):
     queryset = Theatre.objects.all()
     serializer_class = TheatreSerializer
+    permission_classes = [IsAdminOrReadOnly]
 
-class ShowViewSet(viewsets.ReadOnlyModelViewSet):
+class ShowViewSet(viewsets.ModelViewSet):
     queryset = Show.objects.all()
     serializer_class = ShowSerializer
+    permission_classes = [IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['movie', 'date', 'screen__theatre']
 
@@ -34,8 +38,16 @@ class ShowViewSet(viewsets.ReadOnlyModelViewSet):
             'reserved': list(set(reserved_seats))
         })
 
-class SeatViewSet(viewsets.ReadOnlyModelViewSet):
+class ScreenViewSet(viewsets.ModelViewSet):
+    queryset = Screen.objects.all()
+    serializer_class = ScreenSerializer
+    permission_classes = [IsAdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['theatre']
+
+class SeatViewSet(viewsets.ModelViewSet):
     queryset = Seat.objects.all()
     serializer_class = SeatSerializer
+    permission_classes = [IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['screen']

@@ -3,13 +3,14 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
+from cineverse_backend.permissions import IsAdminOrReadOnly
 from .models import Movie, Watchlist, Review
 from .serializers import MovieSerializer, WatchlistSerializer, ReviewSerializer
 
 class MovieViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['is_trending', 'is_upcoming', 'language', 'genre', 'rating']
 
