@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { AuthContext } from '../context/AuthContext';
 import api from '../api/axios';
 import { LayoutDashboard, Film, MonitorPlay, CalendarDays, Ticket, ShieldCheck, TrendingUp, Users } from 'lucide-react';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
-  const { user } = useAuth();
+  const { user } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState('overview');
   const [stats, setStats] = useState(null);
 
