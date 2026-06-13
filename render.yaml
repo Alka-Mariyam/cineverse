@@ -1,0 +1,66 @@
+databases:
+  - name: cineverse-db
+    databaseName: cineverse
+    user: cineverse_user
+
+  - name: cineverse-redis
+    plan: free
+    ipAllowList: [] # only allow internal connections
+
+services:
+  - type: web
+    name: cineverse-backend
+    env: python
+    buildCommand: "./backend/build.sh"
+    startCommand: "gunicorn cineverse_backend.wsgi --chdir backend"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cineverse-db
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromDatabase:
+          name: cineverse-redis
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: 3.11.4
+      - key: DEBUG
+        value: "False"
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PUBLIC_KEY
+        sync: false
+
+  - type: worker
+    name: cineverse-celery-worker
+    env: python
+    buildCommand: "pip install -r backend/requirements.txt"
+    startCommand: "cd backend && celery -A cineverse_backend worker --loglevel=info"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cineverse-db
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromDatabase:
+          name: cineverse-redis
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: 3.11.4
+
+  - type: worker
+    name: cineverse-celery-beat
+    env: python
+    buildCommand: "pip install -r backend/requirements.txt"
+    startCommand: "cd backend && celery -A cineverse_backend beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cineverse-db
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromDatabase:
+          name: cineverse-redis
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: 3.11.4

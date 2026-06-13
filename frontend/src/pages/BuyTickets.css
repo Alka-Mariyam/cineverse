@@ -1,0 +1,85 @@
+.buy-tickets-page {
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+  color: var(--primary-color);
+}
+
+.theatres-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.theatre-card {
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  gap: 20px;
+}
+
+.theatre-info h2 {
+  font-size: 1.5rem;
+  margin-bottom: 5px;
+}
+
+.theatre-info .location {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.showtimes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.showtime-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 60px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: var(--transition);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.showtime-btn:hover {
+  border-color: var(--primary-color);
+  background: rgba(229, 9, 20, 0.1);
+  transform: translateY(-2px);
+}
+
+.showtime-btn .time {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+}
+
+.showtime-btn .type {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.no-shows {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+}
+
+@media (min-width: 768px) {
+  .theatre-card {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .theatre-info {
+    flex: 0 0 300px;
+  }
+}

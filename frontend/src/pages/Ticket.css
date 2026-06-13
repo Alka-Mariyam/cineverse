@@ -1,0 +1,134 @@
+.ticket-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px;
+}
+
+.ticket-success {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.ticket-success h2 {
+  font-size: 2.5rem;
+  color: #fff;
+  margin: 10px 0;
+}
+
+.ticket-success p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+.ticket-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface-color);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 40px;
+}
+
+.ticket-card::before,
+.ticket-card::after {
+  content: '';
+  position: absolute;
+  top: 60%;
+  width: 30px;
+  height: 30px;
+  background: var(--bg-color);
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.ticket-card::before {
+  left: -15px;
+}
+
+.ticket-card::after {
+  right: -15px;
+}
+
+.ticket-header {
+  background: linear-gradient(135deg, #e50914, #ff414d);
+  padding: 20px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ticket-header h3 {
+  color: #fff;
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+}
+
+.booking-id {
+  font-family: monospace;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.ticket-body {
+  padding: 30px;
+  border-bottom: 2px dashed rgba(255, 255, 255, 0.1);
+}
+
+.ticket-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.ticket-info {
+  margin-bottom: 20px;
+}
+
+.ticket-info .label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.ticket-info .value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.ticket-footer {
+  padding: 30px;
+  text-align: center;
+}
+
+.barcode {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 2rem;
+  letter-spacing: 2px;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.ticket-actions {
+  display: flex;
+  gap: 20px;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #ticket-content, #ticket-content * {
+    visibility: visible;
+  }
+  #ticket-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
