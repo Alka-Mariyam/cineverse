@@ -4,28 +4,46 @@ import api from '../api/axios';
 import { CheckCircle, XCircle, Home, Film, MapPin, Calendar, Users } from 'lucide-react';
 import './Ticket.css';
 
+import qrService from '../api/qrService';
+
 const ValidateTicket = () => {
   const { bookingId, token } = useParams();
-  const [status, setStatus] = useState('loading'); // loading, success, used, error
+  const [manualToken, setManualToken] = useState(token || '');
+  const [status, setStatus] = useState(token ? 'loading' : 'idle'); // idle, loading, success, used, error
   const [details, setDetails] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
 
-  useEffect(() => {
-    api.post(`/bookings/${bookingId}/validate_ticket/`, { token })
+  const verifyToken = (tokenToVerify) => {
+    setStatus('loading');
+    qrService.verifyQR(tokenToVerify)
       .then(res => {
-        setDetails(res.data);
-        if (res.data.already_scanned) {
-          setStatus('used');
-        } else {
+        if (res.valid) {
+          setDetails(res.data);
           setStatus('success');
+        } else {
+          setErrorMessage(res.message);
+          setStatus('error');
         }
       })
       .catch(err => {
         console.error(err);
         setStatus('error');
-        setErrorMessage(err.response?.data?.error || 'Failed to validate ticket');
+        setErrorMessage(err.response?.data?.message || 'Failed to validate ticket');
       });
-  }, [bookingId, token]);
+  };
+
+  useEffect(() => {
+    if (token) {
+      verifyToken(token);
+    }
+  }, [token]);
+
+  const handleManualSubmit = (e) => {
+    e.preventDefault();
+    if (manualToken) {
+      verifyToken(manualToken);
+    }
+  };
 
   if (status === 'loading') {
     return (

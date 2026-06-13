@@ -27,4 +27,5 @@ urlpatterns = [
     path('api/auth/register/', RegisterView.as_view(), name='register'),
     path('api/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/qr/', include('qrcodes.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
