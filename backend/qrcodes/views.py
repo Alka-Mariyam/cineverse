@@ -92,13 +92,34 @@ class QRCodeViewSet(viewsets.ModelViewSet):
         qr.save()
         self._log_audit(qr, 'VERIFIED', request)
 
+        response_data = {
+            "entityId": qr.entity_id,
+            "entityType": qr.entity_type
+        }
+        
+        # Inject Booking Details if applicable
+        if qr.entity_type == 'Booking':
+            from bookings.models import Booking
+            try:
+                booking = Booking.objects.get(id=qr.entity_id)
+                seats_str = ", ".join([str(bs.seat.row) + str(bs.seat.number) for bs in booking.booked_seats.all()])
+                response_data.update({
+                    "movie_title": booking.show.movie.title,
+                    "theatre": booking.show.screen.theatre.name,
+                    "screen": booking.show.screen.name,
+                    "date": booking.show.date,
+                    "time": booking.show.start_time,
+                    "seats": seats_str,
+                    "user": booking.user.username,
+                    "amount": booking.total_amount
+                })
+            except Exception:
+                pass
+
         return Response({
             "valid": True,
             "message": "QR verified successfully",
-            "data": {
-                "entityId": qr.entity_id,
-                "entityType": qr.entity_type
-            }
+            "data": response_data
         })
 
     @action(detail=True, methods=['patch'])

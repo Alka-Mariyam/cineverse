@@ -143,19 +143,31 @@ class BookingViewSet(viewsets.ModelViewSet):
                 if booking.status != 'Confirmed':
                     booking.status = 'Confirmed'
                     
-                    # Generate QR Code (URL link to frontend validation page)
-                    import qrcode
+                    # Generate Enterprise QR Code
+                    from qrcodes.models import QRCode as EnterpriseQR
                     from io import BytesIO
                     from django.core.files.base import ContentFile
+                    import qrcode
                     
-                    # Point to Vercel URL
-                    validation_url = f"https://cineverse-smoky.vercel.app/validate/{booking.id}/{booking.security_token}"
+                    # Create generic QR object
+                    eqr = EnterpriseQR.objects.create(
+                        entity_id=booking.id,
+                        entity_type='Booking',
+                        generated_by=booking.user
+                    )
+                    
+                    # Point to Vercel URL with the new generic token
+                    validation_url = f"https://cineverse-smoky.vercel.app/validate/{booking.id}/{eqr.qr_token}"
                     
                     img = qrcode.make(validation_url)
                     buffer = BytesIO()
                     img.save(buffer, format='PNG')
                     
-                    booking.qr_code.save(f'qr_{booking.id}.png', ContentFile(buffer.getvalue()), save=False)
+                    # Save the physical image to both the booking and the QR model
+                    file_content = ContentFile(buffer.getvalue())
+                    booking.qr_code.save(f'qr_{booking.id}.png', file_content, save=False)
+                    eqr.qr_image.save(f'qr_{eqr.id}.png', file_content, save=True)
+                    
                     booking.save()
                     
                 return Response({"status": "success", "booking_id": booking.id})
