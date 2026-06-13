@@ -8,14 +8,24 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Check if token exists on load
-    const token = localStorage.getItem('access_token');
-    const savedUsername = localStorage.getItem('username') || 'User';
-    if (token) {
-      setUser({ authenticated: true, username: savedUsername });
+  const fetchUserDetails = async () => {
+    try {
+      const response = await api.get('/auth/me/');
+      setUser({ authenticated: true, username: response.data.username, is_staff: response.data.is_staff });
+    } catch (error) {
+      console.error('Failed to fetch user details', error);
+      logout();
     }
-    setLoading(false);
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    const username = localStorage.getItem('username');
+    if (token && username) {
+      fetchUserDetails().finally(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   const login = async (username, password) => {
@@ -24,7 +34,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('access_token', response.data.access);
       localStorage.setItem('refresh_token', response.data.refresh);
       localStorage.setItem('username', username);
-      setUser({ authenticated: true, username });
+      await fetchUserDetails();
       return { success: true };
     } catch (error) {
       console.error('Login error', error);

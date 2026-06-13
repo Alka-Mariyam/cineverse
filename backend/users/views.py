@@ -1,5 +1,6 @@
-from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework import generics, views
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 from .models import User
 from .serializers import UserSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -9,4 +10,9 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = UserSerializer
 
-# We can just use TokenObtainPairView for login directly in urls.py
+class UserDetailView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)

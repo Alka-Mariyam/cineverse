@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/auth/register/', RegisterView.as_view(), name='register'),
+    path('api/auth/me/', __import__('users.views').views.UserDetailView.as_view(), name='auth_me'),
     path('api/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/qr/', include('qrcodes.urls')),
