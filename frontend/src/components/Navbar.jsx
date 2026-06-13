@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Film, User, LogOut, Bell, Package, PlaySquare, Settings, CreditCard, Heart, Smartphone, Gift, ChevronDown } from 'lucide-react';
+import { Film, User, LogOut, Bell, Package, PlaySquare, Settings, CreditCard, Heart, Smartphone, Gift, ChevronDown, ShieldCheck } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import './Navbar.css';
 
@@ -44,6 +44,11 @@ const Navbar = () => {
                   <div className="dropdown-header">
                     Hi, {user.username}!
                   </div>
+                  {user.is_staff && (
+                    <Link to="/admin" className="dropdown-item" onClick={() => setDropdownOpen(false)} style={{ color: 'var(--primary-color)', fontWeight: 'bold' }}>
+                      <ShieldCheck size={16} /> Admin Portal
+                    </Link>
+                  )}
                   <Link to="/profile?tab=notifications" className="dropdown-item" onClick={() => setDropdownOpen(false)}><Bell size={16} /> Notifications</Link>
                   <Link to="/profile?tab=orders" className="dropdown-item" onClick={() => setDropdownOpen(false)}><Package size={16} /> Your Orders</Link>
                   <Link to="/profile?tab=stream" className="dropdown-item" onClick={() => setDropdownOpen(false)}><PlaySquare size={16} /> Stream Library</Link>
