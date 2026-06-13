@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://cineverse-backend-kfmq.onrender.com/api',
+  baseURL: 'https://cineverse-backend-kfmq.onrender.com/api',
 });
 
 // Add interceptor to add token if exists
