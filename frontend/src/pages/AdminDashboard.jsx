@@ -3,6 +3,10 @@ import { Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../api/axios';
 import { LayoutDashboard, Film, MonitorPlay, CalendarDays, Ticket, ShieldCheck, TrendingUp, Users } from 'lucide-react';
+import AdminMovies from '../components/admin/AdminMovies';
+import AdminTheatres from '../components/admin/AdminTheatres';
+import AdminShows from '../components/admin/AdminShows';
+import AdminBookings from '../components/admin/AdminBookings';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -131,10 +135,10 @@ const AdminDashboard = () => {
       {/* Main Content Area */}
       <div className="admin-content" style={{ flex: 1 }}>
         {activeTab === 'overview' && renderOverview()}
-        {activeTab === 'movies' && <div className="glass-panel" style={{ padding: '30px' }}><h3>Movie Management</h3><p>CRUD Interface coming soon...</p></div>}
-        {activeTab === 'screens' && <div className="glass-panel" style={{ padding: '30px' }}><h3>Screen Management</h3><p>CRUD Interface coming soon...</p></div>}
-        {activeTab === 'shows' && <div className="glass-panel" style={{ padding: '30px' }}><h3>Show Management</h3><p>CRUD Interface coming soon...</p></div>}
-        {activeTab === 'bookings' && <div className="glass-panel" style={{ padding: '30px' }}><h3>Booking Management</h3><p>Search & Scanner coming soon...</p></div>}
+        {activeTab === 'movies' && <AdminMovies />}
+        {activeTab === 'screens' && <AdminTheatres />}
+        {activeTab === 'shows' && <AdminShows />}
+        {activeTab === 'bookings' && <AdminBookings />}
       </div>
     </div>
   );
