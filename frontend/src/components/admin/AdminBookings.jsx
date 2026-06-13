@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import qrService from '../../api/qrService';
 import { Html5QrcodeScanner } from 'html5-qrcode';
-import { CheckCircle, XCircle, Search, Camera } from 'lucide-react';
+import { CheckCircle, XCircle, Search, Camera, StopCircle } from 'lucide-react';
 
 const AdminBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   
   const [scannerActive, setScannerActive] = useState(false);
+  const [scannerInstance, setScannerInstance] = useState(null);
   const [manualToken, setManualToken] = useState('');
-  const [verifyResult, setVerifyResult] = useState(null); // { valid: bool, message: str, data: obj }
+  const [verifyResult, setVerifyResult] = useState(null);
 
   useEffect(() => {
     fetchBookings();
@@ -27,38 +28,39 @@ const AdminBookings = () => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    if (scannerActive) {
+  const startScanner = () => {
+    setScannerActive(true);
+    setTimeout(() => {
       const scanner = new Html5QrcodeScanner('qr-reader', { fps: 10, qrbox: { width: 250, height: 250 } }, false);
+      setScannerInstance(scanner);
       scanner.render(onScanSuccess, onScanFailure);
+    }, 100);
+  };
 
-      return () => {
-        scanner.clear().catch(error => console.error("Failed to clear scanner", error));
-      };
+  const stopScanner = () => {
+    if (scannerInstance) {
+      scannerInstance.clear().catch(e => console.error("Failed to clear scanner", e));
+      setScannerInstance(null);
     }
-  }, [scannerActive]);
+    setScannerActive(false);
+  };
 
   const onScanSuccess = async (decodedText) => {
-    // Expected format from our Enterprise QR: `https://cineverse-smoky.vercel.app/validate/bookingId/TOKEN`
-    // Extract token from URL, or if it's raw JSON (from older tests) extract the token field.
     let tokenToVerify = decodedText;
-    
     try {
-      // If it's a JSON string
       const parsed = JSON.parse(decodedText);
       if (parsed.token) tokenToVerify = parsed.token;
     } catch (e) {
-      // If it's a URL
       const parts = decodedText.split('/');
       tokenToVerify = parts[parts.length - 1];
     }
 
     verifyQRToken(tokenToVerify);
-    setScannerActive(false); // Stop scanner on success
+    stopScanner();
   };
 
   const onScanFailure = (error) => {
-    // Ignore frequent scan failures (happens every frame it doesn't see a QR)
+    // ignore
   };
 
   const handleManualVerify = (e) => {
@@ -116,12 +118,17 @@ const AdminBookings = () => {
             <>
               {!scannerActive ? (
                 <div style={{ textAlign: 'center', padding: '40px 0' }}>
-                  <button className="btn btn-primary" onClick={() => setScannerActive(true)}>
+                  <button className="btn btn-primary" onClick={startScanner}>
                     <Camera size={20} style={{ marginRight: '10px' }} /> Start Camera Scanner
                   </button>
                 </div>
               ) : (
-                <div id="qr-reader" style={{ width: '100%', marginTop: '20px', background: '#fff' }}></div>
+                <div style={{ position: 'relative' }}>
+                  <div id="qr-reader" style={{ width: '100%', marginTop: '20px', background: '#fff' }}></div>
+                  <button className="btn btn-outline" style={{ width: '100%', marginTop: '10px' }} onClick={stopScanner}>
+                    <StopCircle size={20} style={{ marginRight: '10px' }} /> Stop Scanner
+                  </button>
+                </div>
               )}
 
               <div style={{ margin: '30px 0', textAlign: 'center', color: 'var(--text-secondary)' }}>OR</div>
@@ -157,8 +164,8 @@ const AdminBookings = () => {
             <tbody>
               {bookings.map(b => (
                 <tr key={b.id}>
-                  <td><small>{b.id.substring(0,8)}...</small></td>
-                  <td>{b.user_email || b.user}</td>
+                  <td><strong>#{b.id}</strong></td>
+                  <td>{b.user_email || b.user || 'Unknown'}</td>
                   <td>{b.show_details?.movie_title || `Show ${b.show}`}</td>
                   <td>₹{b.total_amount}</td>
                   <td>
