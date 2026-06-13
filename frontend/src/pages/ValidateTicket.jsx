@@ -27,8 +27,13 @@ const ValidateTicket = () => {
       })
       .catch(err => {
         console.error(err);
-        setStatus('error');
-        setErrorMessage(err.response?.data?.message || 'Failed to validate ticket');
+        const errMsg = err.response?.data?.message || 'Failed to validate ticket';
+        if (errMsg.toLowerCase().includes('revoked')) {
+            setStatus('used');
+        } else {
+            setStatus('error');
+            setErrorMessage(errMsg);
+        }
       });
   };
 

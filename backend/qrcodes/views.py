@@ -87,9 +87,11 @@ class QRCodeViewSet(viewsets.ModelViewSet):
             self._log_audit(qr, 'FAILED', request, "Attempted to verify expired token")
             return Response({"valid": False, "message": "QR code is expired"}, status=status.HTTP_403_FORBIDDEN)
 
-        # Success
+        # Mark as REVOKED so it can never be used again (Single-Use Rule)
+        qr.status = 'REVOKED'
         qr.last_verified_at = timezone.now()
         qr.save()
+        
         self._log_audit(qr, 'VERIFIED', request)
 
         response_data = {
