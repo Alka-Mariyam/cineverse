@@ -72,7 +72,7 @@ const Ticket = () => {
             <div className="qr-code-section" style={{ textAlign: 'center', marginTop: '30px' }}>
               <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '10px' }}>Scan for entry</p>
               <img 
-                src={`https://cineverse-backend-kfmq.onrender.com${booking.qr_code}`} 
+                src={booking.qr_code} 
                 alt="Ticket QR Code" 
                 style={{ width: '150px', height: '150px', borderRadius: '10px', background: '#fff', padding: '10px', boxShadow: '0 0 20px rgba(229, 9, 20, 0.4)' }}
               />
