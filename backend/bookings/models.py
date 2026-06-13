@@ -17,6 +17,8 @@ class Booking(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     stripe_session_id = models.CharField(max_length=255, blank=True, null=True)
     qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True)
+    is_scanned = models.BooleanField(default=False)
+    security_token = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

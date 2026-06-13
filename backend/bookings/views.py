@@ -143,15 +143,15 @@ class BookingViewSet(viewsets.ModelViewSet):
                 if booking.status != 'Confirmed':
                     booking.status = 'Confirmed'
                     
-                    # Generate QR Code
+                    # Generate QR Code (URL link to frontend validation page)
                     import qrcode
                     from io import BytesIO
                     from django.core.files.base import ContentFile
                     
-                    seats_str = ", ".join([str(bs.seat.row) + str(bs.seat.number) for bs in booking.booked_seats.all()])
-                    qr_data = f"CINEVERSE TICKET\n------------------\nBooking ID: {booking.id}\nMovie: {booking.show.movie.title}\nTheatre: {booking.show.screen.theatre.name}\nScreen: {booking.show.screen.name}\nDate: {booking.show.date}\nTime: {booking.show.start_time}\nSeats: {seats_str}\nUser: {booking.user.username}"
+                    # Point to Vercel URL
+                    validation_url = f"https://cineverse-smoky.vercel.app/validate/{booking.id}/{booking.security_token}"
                     
-                    img = qrcode.make(qr_data)
+                    img = qrcode.make(validation_url)
                     buffer = BytesIO()
                     img.save(buffer, format='PNG')
                     
@@ -164,6 +164,41 @@ class BookingViewSet(viewsets.ModelViewSet):
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=True, methods=['post'], permission_classes=[AllowAny])
+    def validate_ticket(self, request, pk=None):
+        booking = self.get_object()
+        token_provided = request.data.get('token')
+
+        if str(booking.security_token) != token_provided:
+            return Response({"error": "Invalid ticket token"}, status=status.HTTP_403_FORBIDDEN)
+
+        if booking.status != 'Confirmed':
+            return Response({"error": "This booking is not confirmed."}, status=status.HTTP_400_BAD_REQUEST)
+
+        is_already_used = booking.is_scanned
+
+        if not is_already_used:
+            # Mark it as used permanently
+            booking.is_scanned = True
+            booking.save()
+
+        # Build response with movie details
+        seats_str = ", ".join([str(bs.seat.row) + str(bs.seat.number) for bs in booking.booked_seats.all()])
+        
+        ticket_data = {
+            "movie_title": booking.show.movie.title,
+            "theatre": booking.show.screen.theatre.name,
+            "screen": booking.show.screen.name,
+            "date": booking.show.date,
+            "time": booking.show.start_time,
+            "seats": seats_str,
+            "user": booking.user.username,
+            "amount": booking.total_amount,
+            "already_scanned": is_already_used
+        }
+
+        return Response(ticket_data)
 
 class GroupBookingViewSet(viewsets.ModelViewSet):
     serializer_class = GroupBookingSerializer
