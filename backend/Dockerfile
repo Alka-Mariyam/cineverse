@@ -21,8 +21,12 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 # Copy project
 COPY . /app/
 
+# Make entrypoint executable
+RUN chmod +x /app/entrypoint.sh
+
 # Expose port 8000
 EXPOSE 8000
 
-# We use a command via docker-compose to start either runserver or celery
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Use entrypoint script to run migrations and collectstatic, then start gunicorn
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["gunicorn", "cineverse_backend.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
