@@ -5,8 +5,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-# When building for production inside docker, we just point the API URL to itself so Nginx proxies it
-ENV VITE_API_URL=/api
 RUN npm run build
 
 # Stage 2: Serve with NGINX
