@@ -97,22 +97,36 @@ const AdminBookings = () => {
               {verifyResult.valid ? (
                 <>
                   <CheckCircle size={60} color="#00C851" style={{ margin: '0 auto 10px' }} />
-                  <h3 style={{ color: '#00C851' }}>Access Granted</h3>
-                  <div style={{ textAlign: 'left', marginTop: '20px', color: 'var(--text-secondary)' }}>
-                    <p><strong>Movie:</strong> {verifyResult.data.movie_title}</p>
-                    <p><strong>Theatre:</strong> {verifyResult.data.theatre} ({verifyResult.data.screen})</p>
-                    <p><strong>Seats:</strong> {verifyResult.data.seats}</p>
-                    <p><strong>User:</strong> {verifyResult.data.user}</p>
+                  <h3 style={{ color: '#00C851', marginBottom: '10px' }}>Valid Ticket - Access Granted</h3>
+                  <div style={{ textAlign: 'left', marginTop: '20px', padding: '15px', background: 'rgba(0, 200, 81, 0.1)', borderRadius: '8px', color: 'var(--text-secondary)' }}>
+                    <p><strong>Movie:</strong> <span style={{ color: '#fff' }}>{verifyResult.data.movie_title}</span></p>
+                    <p><strong>Theatre:</strong> <span style={{ color: '#fff' }}>{verifyResult.data.theatre} ({verifyResult.data.screen})</span></p>
+                    <p><strong>Seats:</strong> <span style={{ color: '#00C851', fontSize: '1.1rem', fontWeight: 'bold' }}>{verifyResult.data.seats}</span></p>
+                    <p><strong>User:</strong> <span style={{ color: '#fff' }}>{verifyResult.data.user}</span></p>
                   </div>
                 </>
               ) : (
                 <>
-                  <XCircle size={60} color="#ff4444" style={{ margin: '0 auto 10px' }} />
-                  <h3 style={{ color: '#ff4444' }}>Access Denied</h3>
-                  <p style={{ color: 'var(--text-secondary)' }}>{verifyResult.message}</p>
+                  {verifyResult.message.toLowerCase().includes('revoked') ? (
+                    <>
+                      <XCircle size={60} color="#ffbb33" style={{ margin: '0 auto 10px' }} />
+                      <h3 style={{ color: '#ffbb33', fontSize: '1.5rem', marginBottom: '10px' }}>Ticket Already Used!</h3>
+                      <div style={{ padding: '15px', background: 'rgba(255, 187, 51, 0.1)', borderRadius: '8px', marginTop: '15px' }}>
+                        <p style={{ color: '#fff', margin: 0 }}>This QR code has already been scanned and cannot be used again.</p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <XCircle size={60} color="#ff4444" style={{ margin: '0 auto 10px' }} />
+                      <h3 style={{ color: '#ff4444', fontSize: '1.5rem', marginBottom: '10px' }}>Invalid Ticket!</h3>
+                      <div style={{ padding: '15px', background: 'rgba(255, 68, 68, 0.1)', borderRadius: '8px', marginTop: '15px' }}>
+                        <p style={{ color: '#fff', margin: 0 }}>{verifyResult.message}</p>
+                      </div>
+                    </>
+                  )}
                 </>
               )}
-              <button className="btn btn-outline" style={{ marginTop: '20px', width: '100%' }} onClick={() => setVerifyResult(null)}>Scan Another</button>
+              <button className="btn btn-primary" style={{ marginTop: '20px', width: '100%', padding: '12px' }} onClick={() => setVerifyResult(null)}>Scan Next Ticket</button>
             </div>
           ) : (
             <>
