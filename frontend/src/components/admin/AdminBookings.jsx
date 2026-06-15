@@ -109,9 +109,9 @@ const AdminBookings = () => {
                 <>
                   {verifyResult.message.toLowerCase().includes('revoked') ? (
                     <>
-                      <XCircle size={60} color="#ffbb33" style={{ margin: '0 auto 10px' }} />
-                      <h3 style={{ color: '#ffbb33', fontSize: '1.5rem', marginBottom: '10px' }}>Ticket Already Used!</h3>
-                      <div style={{ padding: '15px', background: 'rgba(255, 187, 51, 0.1)', borderRadius: '8px', marginTop: '15px' }}>
+                      <XCircle size={60} color="#ff4444" style={{ margin: '0 auto 10px' }} />
+                      <h3 style={{ color: '#ff4444', fontSize: '1.5rem', marginBottom: '10px' }}>Invalid Ticket</h3>
+                      <div style={{ padding: '15px', background: 'rgba(255, 68, 68, 0.1)', borderRadius: '8px', marginTop: '15px' }}>
                         <p style={{ color: '#fff', margin: 0 }}>This QR code has already been scanned and cannot be used again.</p>
                       </div>
                     </>
