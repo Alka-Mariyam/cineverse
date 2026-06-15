@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # 1. Frontend: React + Vite
+  frontend:
+    build:
+      context: ./frontend
+    container_name: cineverse_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:8000/api
+    depends_on:
+      - backend
+
+  # 2. Redis: Cache & Celery Message Broker
+  redis:
+    image: redis:alpine
+    container_name: cineverse_redis
+    ports:
+      - "6379:6379"
+
+  # 3. Backend: Django API
+  backend:
+    build:
+      context: ./backend
+    container_name: cineverse_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - redis
+    command: python manage.py runserver 0.0.0.0:8000
+
+  # 4. Celery Worker (Background Tasks)
+  celery-worker:
+    build:
+      context: ./backend
+    container_name: cineverse_celery_worker
+    volumes:
+      - ./backend:/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - redis
+      - backend
+    command: celery -A cineverse_backend worker -l INFO
+
+  # 5. Celery Beat (Scheduler)
+  celery-beat:
+    build:
+      context: ./backend
+    container_name: cineverse_celery_beat
+    volumes:
+      - ./backend:/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - redis
+      - backend
+    command: celery -A cineverse_backend beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
